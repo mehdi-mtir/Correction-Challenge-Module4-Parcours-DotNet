@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:ReservSalles.Maui.Models"
+             xmlns:vm="clr-namespace:ReservSalles.Maui.ViewModels"
+             x:Class="ReservSalles.Maui.Views.MesReservationsPage"
+             x:DataType="vm:MesReservationsViewModel"
+             Title="Mes réservations"
+             BackgroundColor="{StaticResource RsFond}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Déconnexion" Command="{Binding SeDeconnecterCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="10" Padding="16">
+        <Grid ColumnDefinitions="*,Auto">
+            <Label Text="{Binding Reservations.Count, StringFormat='{0} réservation(s) à venir'}"
+                   VerticalOptions="Center" TextColor="{StaticResource RsTexteSecondaire}" />
+            <ActivityIndicator Grid.Column="1" IsRunning="{Binding EstOccupe}"
+                               IsVisible="{Binding EstOccupe}" WidthRequest="24"
+                               Color="{StaticResource RsPrimaire}" />
+        </Grid>
+
+        <Label Grid.Row="1" Text="{Binding Message}" TextColor="{StaticResource RsErreur}" />
+
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Reservations}">
+            <CollectionView.EmptyView>
+                <Label Text="Aucune réservation à venir." HorizontalOptions="Center" Margin="0,24"
+                       TextColor="{StaticResource RsTexteSecondaire}" />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Reservation">
+                    <Border Margin="0,0,0,8" Padding="12"
+                            BackgroundColor="{StaticResource RsCarte}"
+                            Stroke="{StaticResource RsBordure}"
+                            StrokeShape="RoundRectangle 8">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding SalleNom}" FontSize="16" FontAttributes="Bold" />
+                                <Label>
+                                    <Label.Text>
+                                        <MultiBinding StringFormat="{}{0} · {1}">
+                                            <Binding Path="Jour" />
+                                            <Binding Path="Creneau" />
+                                        </MultiBinding>
+                                    </Label.Text>
+                                </Label>
+                                <Label Text="{Binding Objet}" />
+                                <Label Text="{Binding Details}" FontSize="12"
+                                       TextColor="{StaticResource RsTexteSecondaire}" />
+                            </VerticalStackLayout>
+                            <!-- Bouton visible sur téléphone comme sur ordinateur -->
+                            <Button Grid.Column="1" Text="Annuler" VerticalOptions="Center"
+                                    BackgroundColor="{StaticResource RsErreur}" TextColor="White"
+                                    CommandParameter="{Binding .}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MesReservationsViewModel}},
+                                                      Path=AnnulerCommand}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

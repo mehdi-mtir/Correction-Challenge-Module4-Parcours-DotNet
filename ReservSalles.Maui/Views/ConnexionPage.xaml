@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ReservSalles.Maui.ViewModels"
+             x:Class="ReservSalles.Maui.Views.ConnexionPage"
+             x:DataType="vm:ConnexionViewModel"
+             Shell.NavBarIsVisible="False"
+             Title="Connexion"
+             BackgroundColor="{StaticResource RsFond}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="14" MaximumWidthRequest="420"
+                             VerticalOptions="Center">
+            <Label Text="ReservSalles" FontSize="32" FontAttributes="Bold"
+                   HorizontalOptions="Center" TextColor="{StaticResource RsPrimaire}" />
+            <Label Text="Réservation des salles de réunion" HorizontalOptions="Center"
+                   TextColor="{StaticResource RsTexteSecondaire}" Margin="0,0,0,12" />
+
+            <Entry Placeholder="Identifiant" Text="{Binding Identifiant}"
+                   IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" />
+            <Entry Placeholder="Mot de passe" IsPassword="True" Text="{Binding MotDePasse}"
+                   ReturnCommand="{Binding SeConnecterCommand}" />
+
+            <Button Text="Se connecter" Command="{Binding SeConnecterCommand}" />
+            <ActivityIndicator IsRunning="{Binding EstOccupe}" IsVisible="{Binding EstOccupe}"
+                               Color="{StaticResource RsPrimaire}" />
+            <Label Text="{Binding Message}" TextColor="{StaticResource RsErreur}"
+                   HorizontalTextAlignment="Center" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

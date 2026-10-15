@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Détail d'une salle : réutilisé par DetailSallePage (téléphone) et par SallesPage (ordinateur) -->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:ReservSalles.Maui.Models"
+             xmlns:vm="clr-namespace:ReservSalles.Maui.ViewModels"
+             x:Class="ReservSalles.Maui.Views.VueDetailSalle"
+             x:DataType="vm:DetailSalleViewModel">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="10">
+
+        <!-- Ordinateur : aucune salle choisie pour l'instant -->
+        <Label Grid.RowSpan="5" Text="Sélectionnez une salle dans la liste."
+               IsVisible="{Binding AucuneSalle}"
+               HorizontalOptions="Center" VerticalOptions="Center"
+               TextColor="{StaticResource RsTexteSecondaire}" />
+
+        <!-- En-tête de la salle -->
+        <VerticalStackLayout Grid.Row="0" Spacing="2" IsVisible="{Binding AUneSalle}">
+            <Label Text="{Binding Salle.Nom}" FontSize="24" FontAttributes="Bold"
+                   TextColor="{StaticResource RsPrimaire}" />
+            <Label Text="{Binding Salle.CapaciteTexte}" FontAttributes="Bold" />
+            <Label Text="{Binding Salle.Resume}" TextColor="{StaticResource RsTexteSecondaire}" />
+        </VerticalStackLayout>
+
+        <!-- Choix du jour -->
+        <HorizontalStackLayout Grid.Row="1" Spacing="10" IsVisible="{Binding AUneSalle}">
+            <Label Text="Date :" VerticalOptions="Center" />
+            <DatePicker Date="{Binding Date}" Format="dd/MM/yyyy" />
+            <ActivityIndicator IsRunning="{Binding EstOccupe}" IsVisible="{Binding EstOccupe}"
+                               Color="{StaticResource RsPrimaire}" WidthRequest="24" />
+        </HorizontalStackLayout>
+
+        <Label Grid.Row="2" Text="{Binding Message}" TextColor="{StaticResource RsErreur}" />
+
+        <!-- Réservations du jour -->
+        <CollectionView Grid.Row="3" ItemsSource="{Binding Reservations}"
+                        IsVisible="{Binding AUneSalle}">
+            <CollectionView.EmptyView>
+                <Label Text="Aucune réservation ce jour-là." Margin="0,12"
+                       TextColor="{StaticResource RsTexteSecondaire}" />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Reservation">
+                    <Grid ColumnDefinitions="110,*" Padding="0,6" ColumnSpacing="8">
+                        <Label Text="{Binding Creneau}" FontAttributes="Bold" />
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="{Binding Objet}" />
+                            <Label Text="{Binding Details}" FontSize="12"
+                                   TextColor="{StaticResource RsTexteSecondaire}" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Grid.Row="4" Text="Réserver cette salle" HorizontalOptions="Start"
+                Command="{Binding ReserverCommand}" IsVisible="{Binding AUneSalle}" />
+    </Grid>
+</ContentView>

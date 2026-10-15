@@ -1,0 +1,56 @@
+@api = http://localhost:5080
+@demain = 2026-10-20
+
+### 1. Salles d'au moins 10 places → 200 (Londres, New York, Paris)
+GET {{api}}/api/salles?capaciteMin=10
+
+### 2. Salle inconnue → 404
+GET {{api}}/api/salles/99
+
+### 3. Connexion → 200 ; copiez le jeton dans @jeton
+POST {{api}}/api/auth/login
+Content-Type: application/json
+
+{ "identifiant": "stagiaire", "motDePasse": "stagiaire123" }
+
+###
+@jeton = collez-ici-le-jeton
+
+### 4. Sans jeton → 401
+GET {{api}}/api/reservations/miennes
+
+### 5. Réservation valide → 201
+POST {{api}}/api/reservations
+Authorization: Bearer {{jeton}}
+Content-Type: application/json
+
+{ "salleId": 1, "objet": "Point d'avancement", "participants": 5,
+  "debut": "{{demain}}T10:30:00", "fin": "{{demain}}T11:30:00" }
+
+### 6. Chevauchement avec la réunion de 09:00-10:30 → 409
+POST {{api}}/api/reservations
+Authorization: Bearer {{jeton}}
+Content-Type: application/json
+
+{ "salleId": 1, "objet": "Conflit", "participants": 2,
+  "debut": "{{demain}}T10:00:00", "fin": "{{demain}}T10:45:00" }
+
+### 7. Trop de participants pour Tokyo (4 places) → 400
+POST {{api}}/api/reservations
+Authorization: Bearer {{jeton}}
+Content-Type: application/json
+
+{ "salleId": 4, "objet": "Atelier", "participants": 9,
+  "debut": "{{demain}}T15:00:00", "fin": "{{demain}}T16:00:00" }
+
+### 8. Mes réservations → 200 (la réservation créée en 5)
+GET {{api}}/api/reservations/miennes
+Authorization: Bearer {{jeton}}
+
+### 9. Annuler la réservation de « formateur » (id 1) → 403
+DELETE {{api}}/api/reservations/1
+Authorization: Bearer {{jeton}}
+
+### 10. Annuler sa propre réservation (id renvoyé par la requête 5) → 204, puis 404 si on recommence
+DELETE {{api}}/api/reservations/3
+Authorization: Bearer {{jeton}}

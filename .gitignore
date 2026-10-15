@@ -1,0 +1,9 @@
+bin/
+obj/
+.vs/
+*.user
+# Base locale de l'API (recréée au démarrage)
+*.db
+*.db-shm
+*.db-wal
+Solution_Challenge_ReservSalles/

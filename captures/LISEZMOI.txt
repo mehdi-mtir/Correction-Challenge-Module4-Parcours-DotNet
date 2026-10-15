@@ -1,0 +1,3 @@
+Déposez ici les captures demandées par la tâche C3 :
+- android-reservation.png : formulaire de réservation sur l'émulateur Android
+- windows-maitre-detail.png : page Salles sous Windows, liste à gauche et détail à droite

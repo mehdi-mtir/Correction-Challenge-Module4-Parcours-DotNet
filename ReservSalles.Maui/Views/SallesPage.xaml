@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:ReservSalles.Maui.Models"
+             xmlns:vm="clr-namespace:ReservSalles.Maui.ViewModels"
+             xmlns:views="clr-namespace:ReservSalles.Maui.Views"
+             x:Class="ReservSalles.Maui.Views.SallesPage"
+             x:DataType="vm:SallesViewModel"
+             x:Name="PageSalles"
+             Title="Salles"
+             BackgroundColor="{StaticResource RsFond}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Déconnexion" Command="{Binding SeDeconnecterCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <!-- Bonus D4 : barre de menus (ordinateur). Liaison par x:Reference : la barre de menus
+         n'hérite pas de façon fiable du BindingContext de la page (voir atelier A8). -->
+    <ContentPage.MenuBarItems>
+        <MenuBarItem Text="Fichier">
+            <MenuFlyoutItem Text="Actualiser"
+                            Command="{Binding Source={x:Reference PageSalles},
+                                              Path=BindingContext.ChargerCommand}">
+                <MenuFlyoutItem.KeyboardAccelerators>
+                    <KeyboardAccelerator Modifiers="Ctrl" Key="R" />
+                </MenuFlyoutItem.KeyboardAccelerators>
+            </MenuFlyoutItem>
+            <MenuFlyoutItem Text="Nouvelle réservation"
+                            Command="{Binding Source={x:Reference PageSalles},
+                                              Path=BindingContext.NouvelleReservationCommand}">
+                <MenuFlyoutItem.KeyboardAccelerators>
+                    <KeyboardAccelerator Modifiers="Ctrl" Key="N" />
+                </MenuFlyoutItem.KeyboardAccelerators>
+            </MenuFlyoutItem>
+            <MenuFlyoutSeparator />
+            <MenuFlyoutItem Text="Quitter"
+                            Command="{Binding Source={x:Reference PageSalles},
+                                              Path=BindingContext.QuitterCommand}" />
+        </MenuBarItem>
+    </ContentPage.MenuBarItems>
+
+    <!-- Téléphone : une colonne · Ordinateur : liste (380) + détail (le reste) — tâche C1 -->
+    <Grid ColumnDefinitions="{OnIdiom Phone='*', Default='*', Desktop='380,*'}"
+          ColumnSpacing="16" Padding="16">
+
+        <!-- ===== Colonne 0 : filtre et liste ===== -->
+        <Grid Grid.Column="0" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="10">
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+                <Label Text="{Binding CapaciteMin, StringFormat='Capacité minimale : {0:F0}'}"
+                       VerticalOptions="Center" />
+                <Stepper Grid.Column="1" Minimum="0" Maximum="40" Increment="2"
+                         Value="{Binding CapaciteMin}" />
+                <ActivityIndicator Grid.Column="2" IsRunning="{Binding EstOccupe}"
+                                   IsVisible="{Binding EstOccupe}" WidthRequest="24"
+                                   Color="{StaticResource RsPrimaire}" />
+            </Grid>
+
+            <!-- Bonus D2 : bandeau hors ligne -->
+            <Border Grid.Row="1" IsVisible="{Binding EstHorsLigne}" Padding="10"
+                    BackgroundColor="{StaticResource RsAlerteFond}" Stroke="#B26A00"
+                    StrokeShape="RoundRectangle 6">
+                <Label Text="📴 Hors ligne : dernières salles connues, sans réservation possible."
+                       TextColor="{StaticResource RsAlerteTexte}" FontAttributes="Bold"
+                       LineBreakMode="WordWrap" />
+            </Border>
+
+            <Label Grid.Row="2" Text="{Binding Message}" TextColor="{StaticResource RsErreur}" />
+
+            <CollectionView Grid.Row="3" ItemsSource="{Binding Salles}">
+                <CollectionView.EmptyView>
+                    <Label Text="Aucune salle à afficher." HorizontalOptions="Center" Margin="0,24"
+                           TextColor="{StaticResource RsTexteSecondaire}" />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Salle">
+                        <Border Margin="0,0,0,8" Padding="12"
+                                BackgroundColor="{StaticResource RsCarte}"
+                                Stroke="{StaticResource RsBordure}"
+                                StrokeShape="RoundRectangle 8">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    CommandParameter="{Binding .}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SallesViewModel}},
+                                                      Path=OuvrirSalleCommand}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                                <Label Text="{Binding Nom}" FontSize="16" FontAttributes="Bold" />
+                                <Label Grid.Column="1" Text="{Binding CapaciteTexte}"
+                                       FontAttributes="Bold" TextColor="{StaticResource RsPrimaire}" />
+                                <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Resume}"
+                                       TextColor="{StaticResource RsTexteSecondaire}"
+                                       LineBreakMode="TailTruncation" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+        <!-- ===== Colonne 1 : détail, sur ordinateur seulement ===== -->
+        <Border Grid.Column="{OnIdiom Phone=0, Default=0, Desktop=1}"
+                IsVisible="{OnIdiom Phone=False, Default=False, Desktop=True}"
+                Padding="20" BackgroundColor="{StaticResource RsCarte}"
+                Stroke="{StaticResource RsBordure}" StrokeShape="RoundRectangle 8">
+            <views:VueDetailSalle BindingContext="{Binding Detail}" />
+        </Border>
+    </Grid>
+</ContentPage>

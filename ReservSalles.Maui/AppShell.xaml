@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell x:Class="ReservSalles.Maui.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:views="clr-namespace:ReservSalles.Maui.Views"
+       Shell.FlyoutBehavior="Disabled"
+       Title="ReservSalles">
+
+    <!-- 1. Connexion, HORS des onglets : première page affichée -->
+    <ShellContent Title="Connexion"
+                  Route="connexion"
+                  ContentTemplate="{DataTemplate views:ConnexionPage}" />
+
+    <!-- 2. L'application : deux onglets (tâche B1) -->
+    <TabBar Route="principal">
+        <ShellContent Title="Salles"
+                      Route="salles"
+                      ContentTemplate="{DataTemplate views:SallesPage}" />
+        <ShellContent Title="Mes réservations"
+                      Route="mesreservations"
+                      ContentTemplate="{DataTemplate views:MesReservationsPage}" />
+    </TabBar>
+</Shell>
